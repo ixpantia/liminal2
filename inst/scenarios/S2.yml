@@ -1,0 +1,9 @@
+id: S2
+title: Regulated loan default
+target: 90 days past due
+n: 15000
+p: 20
+rival_definitions: 2
+target_A: 0.773
+target_L: 0.227
+notes: Institutionalised external definition with modest drift.

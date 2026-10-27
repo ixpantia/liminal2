@@ -1,0 +1,9 @@
+id: S3
+title: Subscription churn
+target: 90-day churn
+n: 25000
+p: 30
+rival_definitions: 4
+target_A: 0.493
+target_L: 0.507
+notes: Partial-churn ambiguity with a mid-timeline regime shift.

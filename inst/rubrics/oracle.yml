@@ -1,0 +1,59 @@
+name: oracle
+title: Oracle strength
+description: Anchored elicitation of the strength of the adjudication oracle.
+items:
+  external_authority:
+    label: Independent external authority
+    anchors:
+      0: No independent authority exists
+      0.25: Internal review only
+      0.5: External expert available on request
+      0.75: External expert routinely consulted
+      1: Independent institution publishes the adjudication
+  codified_definition:
+    label: Codified target definition
+    anchors:
+      0: Target is implicit
+      0.25: Informal team convention
+      0.5: Written but not versioned
+      0.75: Written and versioned
+      1: Written, versioned and auditable
+  timeliness:
+    label: Decision-cycle timeliness
+    anchors:
+      0: Adjudication is unavailable
+      0.25: Available after the decision
+      0.5: Available in the next cycle
+      0.75: Usually available in the current cycle
+      1: Available within the decision cycle
+  model_independence:
+    label: Independence from the model
+    anchors:
+      0: Adjudication uses the model output
+      0.25: Partly model-derived
+      0.5: Ambiguous dependence
+      0.75: Mostly independent
+      1: Adjudication does not use the model output
+  inter_judge_agreement:
+    label: Inter-judge agreement
+    anchors:
+      0: Agreement is unknown
+      0.25: Agreement below 0.4
+      0.5: Agreement near 0.6
+      0.75: Agreement near 0.7
+      1: Two experts reach alpha of at least 0.8
+  ex_post_detectability:
+    label: Ex-post error detection
+    anchors:
+      0: Errors are never observable
+      0.25: Rarely observable
+      0.5: Observable for some cases
+      0.75: Usually observable
+      1: Errors are observable after the fact
+weights:
+  external_authority: 0.1666666667
+  codified_definition: 0.1666666667
+  timeliness: 0.1666666667
+  model_independence: 0.1666666667
+  inter_judge_agreement: 0.1666666667
+  ex_post_detectability: 0.1666666667

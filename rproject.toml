@@ -15,11 +15,18 @@ repositories = [
 # {name = "dplyr", repository = "CRAN"},
 # {name = "dplyr", git = "https://github.com/tidyverse/dplyr.git", tag = "v1.1.4"},
 dependencies = [
+  "bibtex",
+  "DescTools",
+  "ggplot2",
+  "glmnet",
+  "irr",
+  "knitr",
+  "pkgdown",
+  "rmarkdown",
   "roxygen2",
   "testthat",
-  "knitr",
-  "rmarkdown",
-  "pkgdown",
+  "withr",
+  "yaml",
   # ragg 1.4.0 avoids libwebp-devel when compiling on openSUSE.
   { name = "ragg", url = "https://cran.r-project.org/src/contrib/Archive/ragg/ragg_1.4.0.tar.gz" },
 ]

@@ -1,0 +1,9 @@
+"criterion","pass","value"
+"strict_ordering",TRUE,1
+"spearman_one",TRUE,1
+"recovery",TRUE,5
+"S3_leak_a4",TRUE,1
+"S3_leak_flagged",TRUE,1
+"S3_not_flagged",TRUE,0
+"S1_null_a4",TRUE,0.00185116666666674
+"weight_ranking",TRUE,1

@@ -1,0 +1,9 @@
+id: S1
+title: Invoice-to-PO matching
+target: match or no-match
+n: 20000
+p: 8
+rival_definitions: 2
+target_A: 0.951
+target_L: 0.049
+notes: Rule-adjudicated finance operations with no material drift.

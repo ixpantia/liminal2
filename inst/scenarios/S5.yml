@@ -1,0 +1,9 @@
+id: S5
+title: Causal long-run LTV
+target: counterfactual LTV delta
+n: 5000
+p: 15
+rival_definitions: 3
+target_A: 0.120
+target_L: 0.880
+notes: Counterfactual LTV with an unmeasured price confounder.

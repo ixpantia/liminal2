@@ -6,17 +6,23 @@
 \alias{liminal2-package}
 \title{liminal2: Estimating the Size of the Liminal Space}
 \description{
-\code{liminal2} provides tools to estimate the size of the liminal space of
-challenges in data science and engineering.
+\code{liminal2} estimates adjudication strength and liminality for predictive
+modelling goals. The package provides base-R estimators for six
+components, bootstrap uncertainty, weight sensitivity, leakage audits and
+five benchmark scenarios.
 }
-\seealso{
-Useful links:
+\section{Design decisions}{
+
 \itemize{
-  \item \url{https://github.com/ixpantia/liminal2}
-  \item Report bugs at \url{https://github.com/ixpantia/liminal2/issues}
+\item Components \code{a5} and \code{a6} are supplied as anchored rubric score vectors;
+the package does not ship an interactive elicitation interface.
+\item Scenario S5 estimates \code{a4} with a documented observed-outcome proxy
+because its target is counterfactual.
+\item The estimators use base R; suggested packages are only used for tests,
+cross-checks and development.
+}
 }
 
-}
 \author{
 \strong{Maintainer}: Frans van Dunné \email{frans@ixpantia.com} (\href{https://orcid.org/0000-0002-7853-2811}{ORCID})
 

@@ -9,3 +9,5 @@
 ^rproject\.toml$
 ^rv$
 ^rv\.lock$
+^bench$
+^Makefile$
