@@ -16,10 +16,15 @@
 /*.tar.gz
 
 # Output files from R CMD check
-/*.Rcheck/
+*.Rcheck/
 
 # RStudio files
 .Rproj.user/
+
+# Editor files
+.vscode/
+.idea/
+*~
 
 # produced vignettes
 vignettes/*.html
@@ -48,3 +53,12 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+
+# opencode files
+.agents
+
+# macOS files
+.DS_Store
+
+# rv library
+rv/library/

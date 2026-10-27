@@ -1,0 +1,29 @@
+Package: liminal2
+Title: Estimating the Size of the Liminal Space of Data Science Challenges
+Version: 0.0.0.9000
+Authors@R:
+  c(person(given = "ixpantia, SRL", 
+         role = "cph",
+         email = "hola@ixpantia.com"),
+  person(given = "Frans", 
+         family = "van Dunné",
+         role = c("cre", "aut"), 
+         email = "frans@ixpantia.com",
+         comment = c(ORCID = "0000-0002-7853-2811"))
+ )
+Description: Tools to estimate the size of the liminal space of challenges in
+    data science and engineering.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+Depends: R (>= 4.2)
+Suggests:
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0)
+VignetteBuilder: knitr
+Config/testthat/edition: 3
+Config/Needs/website: pkgdown
+URL: https://github.com/ixpantia/liminal2
+BugReports: https://github.com/ixpantia/liminal2/issues
+Config/roxygen2/version: 8.1.1

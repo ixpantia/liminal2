@@ -1,0 +1,11 @@
+^\.agents$
+^\.github$
+^\.Rprofile$
+^_pkgdown\.yml$
+^dependencies\.R$
+^docs$
+^LICENSE\.md$
+^liminal2\.Rproj$
+^rproject\.toml$
+^rv$
+^rv\.lock$
