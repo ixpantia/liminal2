@@ -5,7 +5,8 @@
 # The script makes live LLM calls
 # (models x 6 scenarios x 7 prompts x 2 repetitions) and requires the
 # environment variable PANAMA_API_KEY. The key is read from the
-# environment; it is never stored in this file.
+# environment or from a gitignored .env file in the repository root;
+# it is never stored in this file.
 #
 # Usage:
 #   R CMD INSTALL -l "$(rv library)" .
@@ -17,13 +18,34 @@ library(httr2)
 library(purrr)
 library(tibble)
 
+# Load local development secrets from .env when they are not already
+# exported. The file is gitignored and excluded from the package build.
+env_file <- ".env"
+if (file.exists(env_file)) {
+  env_lines <- trimws(readLines(env_file, warn = FALSE))
+  env_lines <- env_lines[
+    nzchar(env_lines) & !startsWith(env_lines, "#")
+  ]
+  for (env_line in env_lines) {
+    env_key <- sub("=.*$", "", env_line)
+    env_value <- sub("^[^=]*=", "", env_line)
+    env_value <- gsub("^['\"]|['\"]$", "", env_value)
+    if (nzchar(env_key) && !nzchar(Sys.getenv(env_key))) {
+      do.call(Sys.setenv, stats::setNames(list(env_value), env_key))
+    }
+  }
+}
+
 base_url <- Sys.getenv(
   "PANAMA_BASE_URL",
   "https://panama.ixpantia.ixops.ai/v1"
 )
 api_key <- Sys.getenv("PANAMA_API_KEY")
 if (!nzchar(api_key)) {
-  stop("Set PANAMA_API_KEY before running this script.")
+  stop(
+    "Set PANAMA_API_KEY in the environment or in the repository's ",
+    ".env file before running this script."
+  )
 }
 
 # Discover every model currently available on the endpoint, together

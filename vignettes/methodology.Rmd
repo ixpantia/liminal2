@@ -30,21 +30,26 @@ changes did to the measurements**. It is written for users who want to
 understand why the package does not simply ask a model "how big is the
 liminal space?" and trust the answer.
 
-The story has three stages:
+The story has four stages:
 
 1. a **naive single-shot judge**, which is the obvious design and the one
    we deliberately did not ship;
 2. **version `1.0.0`**, which decomposed the score into seven anchored,
    independently scored dimensions;
 3. **version `1.1.0`**, which added a scope guard and an ordered scoring
-   procedure to every dimension prompt.
+   procedure to every dimension prompt;
+4. **version `1.2.0`**, which removed the hard floors and cross-dimension
+   double counting that `1.1.0` introduced, added a structural
+   calibration rule, and sharpened the procedures that had conflated
+   method uncertainty with decision disagreement.
 
-Stage `1.0.0` and stage `1.1.0` were both benchmarked over the same six
-scenarios, the same three models and the same two repetitions. The
-`1.0.0` cache is frozen in
-`inst/extdata/model-comparison-results-v1.0.0.parquet`; the current cache
-is `inst/extdata/model-comparison-results.parquet`. Both ship with the
-package, so this vignette renders offline and the comparison is
+All three prompt versions were benchmarked over the same six scenarios,
+the same three models and the same two repetitions. The `1.0.0` and
+`1.1.0` caches are frozen in
+`inst/extdata/model-comparison-results-v1.0.0.parquet` and
+`inst/extdata/model-comparison-results-v1.1.0.parquet`; the current cache
+is `inst/extdata/model-comparison-results.parquet`. All three ship with
+the package, so this vignette renders offline and the comparison is
 reproducible.
 
 ## Stage 0: the naive judge
@@ -121,12 +126,13 @@ read_cache <- function(file, prompt_version) {
 
 results <- dplyr::bind_rows(
   read_cache("model-comparison-results-v1.0.0.parquet", "1.0.0"),
-  read_cache("model-comparison-results.parquet", "1.1.0")
+  read_cache("model-comparison-results-v1.1.0.parquet", "1.1.0"),
+  read_cache("model-comparison-results.parquet", "1.2.0")
 ) |>
   mutate(scenario = factor(scenario, levels = paste0("S", 1:6)))
 
 scenarios <- paste0("S", 1:6)
-versions <- c("1.0.0", "1.1.0")
+versions <- c("1.0.0", "1.1.0", "1.2.0")
 
 # Expected condition (1 = satisfied) by scenario and dimension, from
 # the specification, section 10. These are validation fixtures only;
@@ -244,13 +250,14 @@ the anchors, the direction statement and the output contract unchanged:
    partial-credit rules, interpolate, and reserve the extreme scores for
    genuinely structural cases.
 
-The partial-credit rules are the part that changes behaviour most. For
-`action_identifiable`, for example: a named action that lacks any of the
-four parts (who, threshold, timing, what changes) is at most a 5; no
-threshold, no owner or no timing means at least a 6; no cost of each
-error means at least a 7. Those rules follow from the existing anchor at
-score 5 ("the action is implied but its threshold, owner or timing must
-still be negotiated"), not from any test scenario.
+The partial-credit rules are the part that changed behaviour most. Some
+of them were also too strong. For `action_identifiable`, for example, a
+named action that lacks any of the four parts (who, threshold, timing,
+what changes) was at most a 5, but no threshold, no owner or no timing
+forced at least a 6, and no cost of each error forced at least a 7.
+Those floors contradicted the anchors and double-counted
+`tradeoff_agreed`; the next stage removes them. The table below records
+`1.1.0` as it was, not as the current design.
 
 | Dimension | `1.0.0` problem | `1.1.0` scope guard / procedure |
 |---|---|---|
@@ -264,9 +271,9 @@ still be negotiated"), not from any test scenario.
 
 The anchor scores themselves did not move. That matters: the change
 sharpens *which* anchor a case is matched to, it does not redefine the
-scale. Scores from `1.0.0` and `1.1.0` are therefore not interchangeable,
-and the package records the prompt version in every result and every
-benchmark row.
+scale. Scores from `1.0.0`, `1.1.0` and `1.2.0` are therefore not
+interchangeable, and the package records the prompt version in every
+result and every benchmark row.
 
 ### Why not ask the model to recall other organizations?
 
@@ -291,6 +298,34 @@ that, for four reasons:
 The auditable form of a reference class is the fixed anchor rubric, which
 is already in every prompt. `1.1.0` makes the model use it consistently
 instead of replacing it with recollection.
+
+## Stage 3 (`1.2.0`): remove the floors, calibrate the structure
+
+The `1.1.0` benchmark showed that the scope guards fixed the dimensions
+they targeted, but several rules were over-specified. The model followed
+those rules exactly, which is why the scores still clustered at 7 and 8.
+`1.2.0` is a definition-driven correction, not a fit to the ladder.
+
+| Dimension | `1.1.0` defect | `1.2.0` correction |
+|---|---|---|
+| all | The 8 anchor was treated as the default for any ambiguity | Match the anchor's **structural condition**, not the amount of missing information; 8 is not a default, and 7 is an interpolation between 5 and 8 |
+| `shared_meaning` | An undefined normative word was treated as a rival label definition | A descriptive ask with named quantities scores 1-2; multiple positive classes under one label score 6-8 only when they change who is positive |
+| `stable_ground` | Selection, censoring and stockouts were routed exclusively to `knowable`; an invented "18-24 months" heuristic overrode the evidence | Policy feedback, model-dependent sampling and adversarial drift are structural breaks (5-9); the numeric heuristic is removed |
+| `convergent_answers` | Counted defensible target definitions and method families, then forbade scores below 4 | Score the **share of decisions or rankings that flip**; method count alone is not disagreement, and there is no floor |
+| `knowable_from_observables` | Absorbed undefined target meaning and the absence of a baseline | Undefined meaning is `shared_meaning`; complete, timely descriptive data score 1-2 |
+| `judgeable` | Treated regulated contexts and individual outcome labels as adjudication of the solution | Chargebacks and audits that label cases are not a rubric for the ask; a live policy with no success criterion scores 8-9, while a recomputable indicator scores 2-3 |
+| `action_identifiable` | Contradictory "at most 5" and "at least 6" rules, plus a "no cost matrix means at least 7" floor that double-counted `tradeoff` | Four-part test, graded 0-9; cost belongs to `tradeoff`; an implied monitoring use scores 6-7 and a pure information request 8-9 |
+| `tradeoff_agreed` | A missing cost matrix forced at least 6, so every case looked unresolved | Missing matrix scores 7-8; a live decision with no matrix scores 8; a fixed capacity that silently sets the threshold scores 9; a descriptive ask with no operating decision scores 6-7 |
+
+The anchors and the direction statement did not move. `1.2.0` changes
+only how evidence is read against the existing anchors, so its scores are
+not interchangeable with `1.0.0` or `1.1.0`.
+
+We made this revision once, because each defect is visible in the prompt
+text against the dimension definition. We did not tune a rule to a
+particular scenario, and we did not iterate after the full benchmark.
+A small S1/S5 probe was used only to confirm that the revised prompts
+were functioning before the 252-call run; it was not a fitting target.
 
 ## What changed in the measurements
 
@@ -390,61 +425,88 @@ knitr::kable(summary_table, digits = 3)
 ```
 
 ```{r headline, echo = FALSE}
-old_inverted <- summary_table$inverted_steps[
-  summary_table$version == "1.0.0"
-]
-new_inverted <- summary_table$inverted_steps[
-  summary_table$version == "1.1.0"
-]
-old_models <- summary_table$models_with_ladder[
-  summary_table$version == "1.0.0"
-]
-new_models <- summary_table$models_with_ladder[
-  summary_table$version == "1.1.0"
-]
+stat_by_version <- function(column, version) {
+  summary_table[[column]][summary_table$version == version]
+}
+
+inverted_100 <- stat_by_version("inverted_steps", "1.0.0")
+inverted_110 <- stat_by_version("inverted_steps", "1.1.0")
+inverted_120 <- stat_by_version("inverted_steps", "1.2.0")
+models_100 <- stat_by_version("models_with_ladder", "1.0.0")
+models_110 <- stat_by_version("models_with_ladder", "1.1.0")
+models_120 <- stat_by_version("models_with_ladder", "1.2.0")
+
+model_mean_L <- by_scenario |>
+  dplyr::group_by(version, scenario) |>
+  dplyr::summarise(L = mean(L), .groups = "drop")
+
+liminality_at <- function(version, scenario) {
+  model_mean_L$L[
+    model_mean_L$version == version & model_mean_L$scenario == scenario
+  ]
+}
+
+s1_100 <- liminality_at("1.0.0", "S1")
+s1_110 <- liminality_at("1.1.0", "S1")
+s1_120 <- liminality_at("1.2.0", "S1")
+s5_100 <- liminality_at("1.0.0", "S5")
+s5_110 <- liminality_at("1.1.0", "S5")
+s5_120 <- liminality_at("1.2.0", "S5")
 ```
 
-Under `1.0.0`, `r old_inverted` of the 15 model-by-ladder steps were
-inverted, and `r old_models` of the 3 models reproduced the ladder. Under
-`1.1.0`, the corresponding numbers are `r new_inverted` and
-`r new_models`.
+The number of inverted model-by-ladder steps was `r inverted_100` under
+`1.0.0`, `r inverted_110` under `1.1.0` and `r inverted_120` under
+`1.2.0`, out of 15. The number of models reproducing the full ladder was
+`r models_100`, `r models_110` and `r models_120`, out of 3.
 
 ### Per-dimension change
 
 ```{r delta-table, echo = FALSE}
 delta_table <- fit_table |>
-  dplyr::mutate(
-    MAE_change = `MAE_1.1.0` - `MAE_1.0.0`,
-    Spearman_change = `Spearman_1.1.0` - `Spearman_1.0.0`
+  dplyr::transmute(
+    dimension,
+    `MAE 1.0->1.1` = `MAE_1.1.0` - `MAE_1.0.0`,
+    `MAE 1.1->1.2` = `MAE_1.2.0` - `MAE_1.1.0`,
+    `Spearman 1.1->1.2` = `Spearman_1.2.0` - `Spearman_1.1.0`
   ) |>
-  dplyr::select(dimension, MAE_change, Spearman_change) |>
-  dplyr::arrange(MAE_change)
+  dplyr::arrange(`MAE 1.1->1.2`)
 
-improved <- delta_table |>
-  dplyr::filter(MAE_change < -0.10) |>
+improved_120 <- delta_table |>
+  dplyr::filter(`MAE 1.1->1.2` < -0.10) |>
   dplyr::pull(dimension) |>
   as.character()
-regressed <- delta_table |>
-  dplyr::filter(MAE_change > 0.10) |>
+regressed_120 <- delta_table |>
+  dplyr::filter(`MAE 1.1->1.2` > 0.10) |>
   dplyr::pull(dimension) |>
   as.character()
-unchanged <- delta_table |>
-  dplyr::filter(abs(MAE_change) <= 0.10) |>
+unchanged_120 <- delta_table |>
+  dplyr::filter(abs(`MAE 1.1->1.2`) <= 0.10) |>
   dplyr::pull(dimension) |>
   as.character()
+unchanged_120_text <- if (length(unchanged_120) == 0L) {
+  "no dimension was left unchanged"
+} else {
+  paste(
+    paste(unchanged_120, collapse = ", "),
+    "were essentially unchanged"
+  )
+}
 
-cost_old <- summary_table$total_cost[summary_table$version == "1.0.0"]
-cost_new <- summary_table$total_cost[summary_table$version == "1.1.0"]
-jitter_old <- summary_table$L_jitter[summary_table$version == "1.0.0"]
-jitter_new <- summary_table$L_jitter[summary_table$version == "1.1.0"]
+cost_100 <- stat_by_version("total_cost", "1.0.0")
+cost_110 <- stat_by_version("total_cost", "1.1.0")
+cost_120 <- stat_by_version("total_cost", "1.2.0")
+jitter_100 <- stat_by_version("L_jitter", "1.0.0")
+jitter_110 <- stat_by_version("L_jitter", "1.1.0")
+jitter_120 <- stat_by_version("L_jitter", "1.2.0")
 
 knitr::kable(delta_table, digits = 2)
 ```
 
-Negative `MAE_change` means the dimension moved closer to the fixture.
-The guard improved `r paste(improved, collapse = ", ")`, left
-`r paste(unchanged, collapse = ", ")` essentially unchanged, and
-over-corrected `r paste(regressed, collapse = ", ")`.
+Negative `MAE 1.1->1.2` means the dimension moved closer to the fixture.
+Relative to `1.1.0`, `1.2.0` moved
+`r paste(improved_120, collapse = ", ")` closer to the fixture and
+`r paste(regressed_120, collapse = ", ")` further away;
+`r unchanged_120_text`.
 
 ### Raw-score movement
 
@@ -454,7 +516,8 @@ shift_table <- observed |>
   dplyr::summarise(raw = mean(raw), .groups = "drop") |>
   tidyr::pivot_wider(names_from = version, values_from = raw) |>
   dplyr::mutate(
-    change = `1.1.0` - `1.0.0`,
+    `1.0->1.1` = `1.1.0` - `1.0.0`,
+    `1.1->1.2` = `1.2.0` - `1.1.0`,
     dimension = factor(
       dimension,
       levels = liminal2::liminal_dimensions()$name
@@ -467,20 +530,44 @@ knitr::kable(shift_table, digits = 2)
 
 ## What the benchmark showed
 
-The revision improved the dimensions it was designed to fix and
-over-corrected three others. That mixed result is the point of keeping
-both caches: it is a measurement, not a claim.
+### The S1--S5 separation
 
-### What worked
+The validation fixtures are designed to put S1 at the closed end and S5
+at the open end. The table shows the model-averaged liminality for each
+prompt version, next to the fixture's expected value.
+
+```{r separation-table, echo = FALSE}
+separation_table <- tibble::tibble(
+  source = c("fixture", versions),
+  S1 = c(
+    expected_L$expected_L[expected_L$scenario == "S1"],
+    s1_100, s1_110, s1_120
+  ),
+  S5 = c(
+    expected_L$expected_L[expected_L$scenario == "S5"],
+    s5_100, s5_110, s5_120
+  )
+) |>
+  dplyr::mutate(gap = S5 - S1)
+
+knitr::kable(separation_table, digits = 3)
+```
+
+The `1.1.0` revision fixed dimension bleed but introduced new floors.
+`1.2.0` removes them. The sections below separate what each stage
+changed.
+
+### What `1.1.0` fixed
 
 - `action_identifiable` is the clearest win. The mean absolute error
   roughly halved. S5 and S6, which `1.0.0` scored as if "block fraud" and
   "set prices" were complete decision rules, moved up sharply once the
-  four-part test made the missing threshold, owner and cost explicit.
-- `shared_meaning` moved closer to the fixtures. S1, S3, S4 and S6 became
-  low-liminality, which is what the scope guard intends: with one stated
-  definition and no quotable rival, the score cannot exceed 3. S2 stayed
-  high because it really does describe rival definitions. Part of the
+  four-part test made the missing threshold and owner explicit.
+- `shared_meaning` moved closer to the fixtures. S1, S3, S4 and S6 fell
+  to 2--4, which is what the scope guard intends: with one stated
+  definition and no quotable rival, the guard pulls the score toward the
+  low anchor. S2 stayed high because it really does describe rival
+  definitions. Part of the
   remaining gap is the fixture, not the model: S6 is expected to score 8
   on shared meaning, yet its text describes no rival definition of the
   target. That is dimension bleed in the validation fixture.
@@ -489,7 +576,7 @@ both caches: it is a measurement, not a claim.
   into the expected range once selection was treated as a knowability
   problem.
 
-### What over-corrected
+### What `1.1.0` broke
 
 - `convergent_answers` saturated at 8-9 in every scenario. The rule "do
   not score below 4 unless both the target and the method are pinned
@@ -508,32 +595,46 @@ both caches: it is a measurement, not a claim.
   an adjudicator. That conflates *confirming a fraud* with *adjudicating
   whether the solution satisfied the ask*.
 
-### Net effect
+### What `1.2.0` changed
 
-At the model-averaged level, the S1-to-S2 step is fixed and two steps,
-S2-to-S3 and S4-to-S5, remain inverted. The ladder count in the summary
-table above tells the same story: the number of inverted steps fell, but
-no model yet reproduces the full ladder. The low end of the scale widened
-(S1 moved down), while the top compressed above S4. Cost rose from
-`r sprintf("%.2f", cost_old)` to `r sprintf("%.2f", cost_new)` dollars,
-because the prompts are longer, and run-to-run jitter rose slightly but
-stayed small (mean absolute change in the final score,
-`r sprintf("%.3f", jitter_old)` to `r sprintf("%.3f", jitter_new)`).
+Relative to `1.1.0`, `1.2.0` moved
+`r paste(improved_120, collapse = ", ")` closer to the fixture, and moved
+`r paste(regressed_120, collapse = ", ")` away from it. The point is not
+that every dimension improved; it is that the rules now read the existing
+anchors instead of overriding them. The one substantive cost is
+`action_identifiable`: S5 and S6 both score below the fixture's 8, and S6
+lands below the prompt's own 6--7 band for a named action that lacks a
+threshold and an owner. That is a remaining calibration gap, not a reason
+to revise again in this iteration.
+
+At the model-averaged level, S1 moved from `r sprintf("%.3f", s1_110)` to
+`r sprintf("%.3f", s1_120)`, and S5 from `r sprintf("%.3f", s5_110)` to
+`r sprintf("%.3f", s5_120)`. The S1--S5 gap is
+`r sprintf("%.3f", s5_120 - s1_120)`. The number of inverted
+model-by-ladder steps is `r inverted_120` of 15, and `r models_120` of 3
+models reproduce the full ladder.
+
+Cost rose from `r sprintf("%.2f", cost_100)` under `1.0.0` to
+`r sprintf("%.2f", cost_110)` under `1.1.0` and
+`r sprintf("%.2f", cost_120)` under `1.2.0`, because the prompts are
+longer. Final-score jitter was `r sprintf("%.3f", jitter_100)`,
+`r sprintf("%.3f", jitter_110)` and `r sprintf("%.3f", jitter_120)`:
+the extra instructions did not make the measurement materially less
+stable.
 
 ### Why we stop here
 
-The three regressions are diagnosable from the method, not from the
-ladder. The "18-24 months" and "do not score below 4" rules are invented
-numeric thresholds that are not in the anchors; the "regulated context"
-rule widens `judgeable` beyond its definition. A `1.2.0` revision should
-remove those three rules and re-benchmark. That is a change justified by
-the dimension definitions.
+The `1.2.0` revision removed the rules that a close reading of the
+prompts showed to be inconsistent with the dimension definitions. It was
+a single, definition-driven correction; it was not tuned to the ladder,
+and it is not followed by another iteration.
 
-We deliberately did not make it in this iteration. Changing the prompts
-again after seeing which scenarios moved would be fitting the prompt to
-the validation data, which is exactly the circularity the design forbids.
-The correct next step is an independent anchor review (specification,
-section 14.1), not another tuning pass against S1--S6.
+The remaining gaps are anchor-calibration evidence, not another prompt
+wording problem. The correct next step is the independent anchor review
+in specification section 14.1: raters who did not write the prompts,
+scoring blind cases outside this suite. Further tuning against S1--S6
+would be fitting the prompt to the validation data, which is exactly the
+circularity the design forbids.
 
 ## Limitations
 
@@ -542,28 +643,36 @@ section 14.1), not another tuning pass against S1--S6.
   ladder may still be wrong on the next business case.
 - A monotone ladder is a strong claim for a product of seven noisy
   integers. S2 versus S3 is a genuine disagreement about the case, not
-  only a wording defect.
+  only a wording defect, and under `1.2.0` the middle of the ladder
+  (S2, S3, S4) is effectively flat, so the monotone claim is not met.
+- One fixture expectation disagrees with the anchors. S6's shared
+  meaning expects 8, yet the scenario names a single target (price
+  elasticity) and no rival definition, so the dimension should be low;
+  that mismatch is a sizeable part of `shared_meaning`'s mean absolute
+  error. The target is correct dimension semantics, not exact
+  reproduction of every fixture number.
 - Temperature 0 is not bitwise determinism on this endpoint; the jitter
   columns bound the variation, and repeats are not identical.
-- Scores from `1.0.0` and `1.1.0` must not be pooled. They are separate
-  measurements on different prompt versions, and the package records the
-  version in every result and every benchmark row.
+- Scores from `1.0.0`, `1.1.0` and `1.2.0` must not be pooled. They are
+  separate measurements on different prompt versions, and the package
+  records the version in every result and every benchmark row.
 
 ## Reproducing the comparison
 
-The comparison needs no network access: it reads the two committed
+The comparison needs no network access: it reads the three committed
 caches.
 
 ```{r reproduce, eval = FALSE}
 results <- dplyr::bind_rows(
   read_cache("model-comparison-results-v1.0.0.parquet", "1.0.0"),
-  read_cache("model-comparison-results.parquet", "1.1.0")
+  read_cache("model-comparison-results-v1.1.0.parquet", "1.1.0"),
+  read_cache("model-comparison-results.parquet", "1.2.0")
 )
 ```
 
 To regenerate the current cache, run `data-raw/model_comparison.R` with
 `PANAMA_API_KEY` set. The script discovers the model list live from the
 endpoint, records the prompt version on every row, and writes
-`inst/extdata/model-comparison-results.parquet`. To keep a new version
-for comparison, copy the current cache to a versioned filename before
-regenerating, exactly as was done for `1.0.0`.
+`inst/extdata/model-comparison-results.parquet`. To keep a version for
+comparison, copy the current cache to a versioned filename before
+regenerating, exactly as was done for `1.0.0` and `1.1.0`.

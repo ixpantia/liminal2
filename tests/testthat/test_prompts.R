@@ -72,6 +72,9 @@ testthat::test_that("every prompt carries the direction and the anchors", {
   testthat::expect_true(
     all(grepl("Score 8 (large space)", prompts, fixed = TRUE))
   )
+  testthat::expect_true(
+    all(grepl("## Calibration", prompts, fixed = TRUE))
+  )
 })
 
 testthat::test_that("the rendered judgeable prompt is stable", {

@@ -78,7 +78,7 @@ liminal_dimension_registry <- tibble::tibble(
     "Recoverability",
     "Consensus"
   ),
-  prompt_version = rep("1.1.0", length(liminal_dimension_names))
+  prompt_version = rep("1.2.0", length(liminal_dimension_names))
 )
 
 #' The seven dimensions of liminal space

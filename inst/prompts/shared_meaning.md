@@ -32,11 +32,35 @@ choice moves a modest share of cases and is undebated.
 Score 8 (large space): Three or more rival definitions are live and
 the choice flips a material share of cases; no owner can arbitrate.
 
+## Calibration
+
+Match the structural condition in the anchor, not the amount of
+missing information. The 8 anchor is a specific structural case, not
+a default for an ambiguous ask. If the input does not meet that
+condition, score below 8. When the evidence falls between 5 and 8,
+use 6 or 7; do not jump to 7 or 8 merely because something is
+unspecified. Score this dimension on its own evidence: a defect that
+belongs to another dimension must not raise this score.
+
 ## What counts
 
 Count only rival definitions of the target label that change who is
 classified positive. Two definitions are rival only when they would
 label a different set of cases positive.
+
+If the ask requests descriptive quantities rather than a positive
+class (counts, hours, rates, indicators), there is no label to
+operationalise: score 1-2 unless the input also supplies rival
+definitions of those quantities that would produce materially
+different numbers. An undefined normative word such as "well" or
+"execution" is not by itself a rival label definition when the ask
+names the quantities to compute.
+
+If the ask names a single target but the situation describes several
+positive classes with different label paths (for example, several
+fraud types under one "fraud" label), treat them as rival
+operationalisations only when choosing among them would change which
+cases are positive. If no owner can arbitrate that choice, score 6-8.
 
 Do not count as shared meaning:
 - the performance horizon or observation window;
@@ -48,10 +72,10 @@ Do not count as shared meaning:
 ## How to score
 
 1. Quote the definition of the target that the input states or
-   implies.
+   implies. If the ask is descriptive, quote the quantity requested.
 2. Quote any rival definition. If you cannot quote a second
-   definition that changes who is positive, the score cannot exceed
-   3.
+   definition that changes who is positive, score 1-3 for a descriptive
+   target, or below 5 for a label target.
 3. If the input explicitly says the label is settled or externally
    defined, do not score above 4 on this dimension.
 4. Otherwise match the quoted definitions to the anchors and

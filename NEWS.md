@@ -1,5 +1,12 @@
 # liminal2 0.3.0
 
+* Prompt version `1.2.0`: removes the hard score floors and
+  cross-dimension double counting that `1.1.0` introduced, adds a
+  structural calibration rule so the 8 anchor is not a default for
+  ambiguity, and sharpens the procedures for decision flips,
+  recomputable indicators, policy feedback and solution adjudication.
+  The anchor rubrics and direction statement are unchanged. Scores from
+  `1.0.0`, `1.1.0` and `1.2.0` are not poolable.
 * Prompt version `1.1.0`: every dimension template now carries a **scope
   guard** (the evidence that belongs to the dimension and the evidence it
   must not absorb from another dimension) and an **ordered scoring
@@ -11,10 +18,11 @@
   result and every benchmark row.
 * Add the methodology vignette, which documents the evolution from a
   naive single-shot judge to the current design and measures the effect
-  of `1.1.0` against the frozen `1.0.0` benchmark.
-* Benchmark caches now record `prompt_version` per row. The `1.0.0` run
-  is frozen in
-  `inst/extdata/model-comparison-results-v1.0.0.parquet`; the live cache
+  of `1.1.0` and `1.2.0` against the frozen benchmarks.
+* Benchmark caches now record `prompt_version` per row. The `1.0.0` and
+  `1.1.0` runs are frozen in
+  `inst/extdata/model-comparison-results-v1.0.0.parquet` and
+  `inst/extdata/model-comparison-results-v1.1.0.parquet`; the live cache
   always holds the current version.
 
 # liminal2 0.2.0

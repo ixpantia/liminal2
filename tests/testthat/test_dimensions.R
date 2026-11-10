@@ -27,5 +27,5 @@ testthat::test_that("the registry carries the documented columns", {
       "prompt_version"
     )
   )
-  testthat::expect_true(all(registry$prompt_version == "1.1.0"))
+  testthat::expect_true(all(registry$prompt_version == "1.2.0"))
 })

@@ -169,6 +169,12 @@ make check
 
 `make check` builds the tarball and runs `R CMD check` with `--no-manual`.
 
+Live API calls (the integration tests and
+`data-raw/model_comparison.R`) need a Panama key. Copy `.env.example` to
+`.env`, fill in `PANAMA_API_KEY`, and keep the file local: `.env` is
+gitignored and excluded from the build. An exported
+`PANAMA_API_KEY` takes precedence over the file.
+
 ## License
 
 MIT (c) 2026 ixpantia.

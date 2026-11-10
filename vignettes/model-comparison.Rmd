@@ -57,9 +57,11 @@ scenarios S1--S6 and the seven dimension prompts, with each cell run
 twice to quantify run-to-run stability at temperature 0. The raw scores,
 token usage and cost of every call are cached in
 `inst/extdata/model-comparison-results.parquet`. The superseded `1.0.0`
-run is kept in
-`inst/extdata/model-comparison-results-v1.0.0.parquet` and compared in
-the *From a naive LLM judge to a rigorous one* vignette.
+and `1.1.0` runs are kept in
+`inst/extdata/model-comparison-results-v1.0.0.parquet` and
+`inst/extdata/model-comparison-results-v1.1.0.parquet`, and the staged
+comparison is in the *From a naive LLM judge to a rigorous one*
+vignette.
 
 ## Liminality per model and scenario
 
@@ -133,30 +135,6 @@ At temperature 0 it is often small but not necessarily zero, because
 batched inference on the serving backend makes even greedy sampling
 vary between runs; non-zero values quantify that residual jitter. `total_cost` is summed over all calls of the benchmark.
 
-## Raw dimension scores
-
-The table below shows the mean raw score (0 = small space, 10 = large
-space) over the two repetitions for every model, scenario and
-dimension, and the absolute difference between the repetitions. This is
-where dimension-level disagreements between models become visible.
-
-```{r table2}
-table2 <- results |>
-  group_by(model, scenario, dimension) |>
-  summarise(
-    mean_raw = mean(raw_score),
-    rep_delta = if (dplyr::n() == 2) {
-      abs(diff(raw_score))
-    } else {
-      NA_real_
-    },
-    .groups = "drop"
-  ) |>
-  mutate(across(c(mean_raw, rep_delta), ~ round(.x, 1)))
-
-knitr::kable(table2)
-```
-
 ## Reading the benchmark
 
 ```{r findings}
@@ -173,11 +151,13 @@ default_liminality <- liminality |>
 `r n_ladder_ok` of `r length(models)` models reproduce the strictly
 increasing ladder. The default model, `r default_model`, yields the
 liminalities
-`r paste(sprintf("%.2f", default_liminality), collapse = " < ")` along
-S1--S6. When a model deviates, the raw-score table above shows which
-dimensions drive the difference: disagreement concentrated in one
-dimension is evidence about that dimension's anchors, while diffuse
-disagreement is evidence about the model. Stability deltas above zero
+`r paste(sprintf("%.2f", default_liminality), collapse = ", ")` along
+S1--S6. When a model deviates, the dimension-level scores remain in the
+cached parquet, and the *From a naive LLM judge to a rigorous one*
+vignette examines which dimensions drive the difference: disagreement
+concentrated in one dimension is evidence about that dimension's
+anchors, while diffuse disagreement is evidence about the model.
+Stability deltas above zero
 mean the model does not score deterministically even at temperature 0,
 and its scores should not be compared at a finer resolution than the
 observed jitter. Per the specification, such findings feed the anchor

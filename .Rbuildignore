@@ -1,7 +1,10 @@
 ^\.agents$
 ^\.github$
 ^\.Rprofile$
+^\.env$
+^\.env\.example$
 ^_pkgdown\.yml$
+^pkgdown$
 ^dependencies\.R$
 ^docs$
 ^LICENSE\.md$

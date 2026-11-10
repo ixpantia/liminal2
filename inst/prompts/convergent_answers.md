@@ -32,30 +32,52 @@ but diverge on a non-trivial minority.
 Score 8 (large space): Several near-equal models exist and disagree on
 a substantial share of decisions with no basis to choose.
 
+## Calibration
+
+Match the structural condition in the anchor, not the amount of
+missing information. The 8 anchor is a specific structural case, not
+a default for an ambiguous ask. If the input does not meet that
+condition, score below 8. When the evidence falls between 5 and 8,
+use 6 or 7; do not jump to 7 or 8 merely because something is
+unspecified. Score this dimension on its own evidence: a defect that
+belongs to another dimension must not raise this score.
+
 ## What counts
 
-Count only choices that a competent analyst could defend to a peer.
-Different hyperparameters of the same model family are not rival
-answers, and neither are purely cosmetic differences in
-implementation.
+Count only choices that a competent analyst could defend to a peer
+and that would change the decision, the ranking, or the set of cases
+classified positive. Different hyperparameters of the same model
+family are not rival answers, and neither are purely cosmetic
+differences in implementation.
+
+Different methods that produce the same decision or the same ranking
+are not divergent answers. The score is the share of decisions that
+flip, not the number of defensible methods.
 
 ## How to score
 
-The evidence (the share of decisions that flip among near-best
-models) cannot be read directly from an ask, so approximate it by
-enumerating the defensible choices the input leaves open:
-
-1. Count the defensible target definitions (1, 2, or 3 or more).
-2. Count the defensible model families or method classes implied by
-   the data and the ask (1, 2, or 3 or more).
-3. Score 2 when one target and one obvious family are defensible; 5
-   when there are two defensible targets or families; 8 when three
-   or more defensible combinations exist and nothing in the input
-   ranks them.
-4. Do not score below 4 unless the ask and the situation pin down
-   both a single target and a single reasonable method.
-5. Reserve 0-1 for a case where near-equal models are known to
-   agree, and 9-10 for one where several near-equal models exist
+1. Identify the decision or classification the output will drive. If
+   the ask is descriptive and names no decision, use the ranking or
+   classification that the requested output would produce.
+2. Enumerate only choices that would change that decision, ranking or
+   positive set materially. A different method that reproduces the
+   same ordering is not a rival answer.
+3. Estimate the share of cases that would flip:
+   - score 2 when near-equal approaches produce nearly identical
+     decisions or rankings;
+   - score 5 when they agree on most cases but flip a non-trivial
+     minority;
+   - score 8 when several near-equal approaches flip a substantial
+     share and nothing in the input ranks them.
+4. If the ask requests multiple descriptive indicators, different
+   indicators are not rival answers to one decision. Score agreement
+   on the requested quantities, not on an unasked downstream decision.
+5. Do not raise the score merely because several methods are
+   defensible. Method count is not decision disagreement. There is no
+   floor: a case with one stable ranking can score 2 even when the
+   method is not specified.
+6. Reserve 0-1 for a case where near-equal approaches are known to
+   agree, and 9-10 for one where several near-equal approaches exist
    and nothing can choose between them.
 
 ## Input
