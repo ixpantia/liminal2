@@ -19,6 +19,7 @@ dependencies = [
   "bibtex",
   "cli",
   "DescTools",
+  "dplyr",
   "ellmer",
   "ggplot2",
   "glmnet",
@@ -32,6 +33,7 @@ dependencies = [
   "roxygen2",
   "testthat",
   "tibble",
+  "tidyr",
   "withr",
   "yaml",
   # ragg 1.4.0 avoids libwebp-devel when compiling on openSUSE.

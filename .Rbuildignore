@@ -10,4 +10,5 @@
 ^rv$
 ^rv\.lock$
 ^bench$
+^data-raw$
 ^Makefile$

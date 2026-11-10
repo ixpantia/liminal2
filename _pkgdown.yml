@@ -2,3 +2,8 @@ url: https://ixpantia.github.io/liminal2/
 
 template:
   bootstrap: 5
+
+articles:
+- title: Benchmarks
+  contents:
+  - model-comparison
