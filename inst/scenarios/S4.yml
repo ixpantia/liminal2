@@ -1,9 +1,0 @@
-id: S4
-title: Employee attrition
-target: voluntary exit
-n: 8000
-p: 40
-rival_definitions: 5
-target_A: 0.349
-target_L: 0.651
-notes: Flight-risk scoring without voluntary or involuntary separation.
