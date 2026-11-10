@@ -1,5 +1,7 @@
 # liminal2 <img src="man/figures/logo.png" align="right" height="200" alt="liminal2 logo" />
 
+[![pkgdown](https://github.com/ixpantia/liminal2/actions/workflows/pkgdown.yaml/badge.svg)](https://ixpantia.github.io/liminal2/)
+
 <!-- Describe the new implementation here. -->
 
 ## Definition
