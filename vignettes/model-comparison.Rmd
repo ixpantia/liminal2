@@ -1,0 +1,171 @@
+---
+title: "Model comparison"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Model comparison}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(liminal2)
+library(arrow)
+library(dplyr)
+library(tidyr)
+```
+
+## Purpose
+
+This vignette benchmarks how the seven dimension scores and the final
+liminality differ across **all models available on the Panama API**, and
+presents the evidence in tables. It makes the choice of the default
+model (`glm-5.3`) an auditable, visible decision instead of an
+assertion.
+
+The benchmark is **evaluation, not calibration**: the scenario ladder is
+used as a benchmark metric, never as a fitting target, and the results
+are never used to re-tune prompts or anchors. Scores from different
+models must not be pooled.
+
+```{r data}
+results <- arrow::read_parquet(
+  system.file(
+    "extdata",
+    "model-comparison-results.parquet",
+    package = "liminal2"
+  )
+)
+
+scenarios <- unique(results$scenario)
+models <- unique(results$model)
+benchmark_date <- unique(results$benchmark_date)
+```
+
+The benchmark was regenerated from live API calls on `r benchmark_date`
+under prompt version `r unique(results$prompt_version)`, and covers
+`r length(models)` models (`r paste(models, collapse = ", ")`), the six
+scenarios S1--S6 and the seven dimension prompts, with each cell run
+twice to quantify run-to-run stability at temperature 0. The raw scores,
+token usage and cost of every call are cached in
+`inst/extdata/model-comparison-results.parquet`. The superseded `1.0.0`
+and `1.1.0` runs are kept in
+`inst/extdata/model-comparison-results-v1.0.0.parquet` and
+`inst/extdata/model-comparison-results-v1.1.0.parquet`, and the staged
+comparison is in the *From a naive LLM judge to a rigorous one*
+vignette.
+
+## Liminality per model and scenario
+
+Each row of the headline table aggregates the two repetitions. The
+condition scores are computed from the raw scores with the fixed
+conversion from the specification (`condition = 1 - raw / 10`) and
+aggregated with `measure_liminal_space()`.
+
+```{r liminality}
+liminality <- results |>
+  group_by(model, scenario, rep) |>
+  summarise(
+    liminality = liminal2::measure_liminal_space(
+      stats::setNames(1 - raw_score / 10, dimension)
+    ),
+    .groups = "drop"
+  )
+```
+
+```{r table1}
+headline <- liminality |>
+  group_by(model, scenario) |>
+  summarise(
+    mean_liminality = mean(liminality),
+    rep_delta = abs(diff(liminality)),
+    .groups = "drop"
+  ) |>
+  mutate(scenario = factor(scenario, levels = scenarios)) |>
+  arrange(model, scenario)
+
+ladder <- liminality |>
+  mutate(scenario = factor(scenario, levels = scenarios)) |>
+  arrange(model, rep, scenario) |>
+  group_by(model, rep) |>
+  summarise(ladder_ok = all(diff(liminality) > 0), .groups = "drop") |>
+  group_by(model) |>
+  summarise(ladder_ok = all(ladder_ok), .groups = "drop")
+
+stability <- headline |>
+  group_by(model) |>
+  summarise(mean_delta = mean(rep_delta), .groups = "drop")
+
+cost <- results |>
+  group_by(model) |>
+  summarise(total_cost = sum(cost, na.rm = TRUE), .groups = "drop")
+
+# One row per model: the per-scenario rep_delta is summarised by
+# mean_delta below, so it must not survive into the wide table (it
+# would become a row identifier and shatter the pivot into mostly-NA
+# rows).
+table1 <- headline |>
+  mutate(mean_liminality = round(mean_liminality, 2)) |>
+  dplyr::select(-rep_delta) |>
+  pivot_wider(names_from = scenario, values_from = mean_liminality) |>
+  left_join(stability, by = "model") |>
+  left_join(ladder, by = "model") |>
+  left_join(cost, by = "model") |>
+  mutate(
+    mean_delta = round(mean_delta, 2),
+    total_cost = round(total_cost, 2)
+  )
+
+knitr::kable(table1)
+```
+
+`ladder_ok` is `TRUE` when the six liminalities are strictly increasing
+along S1--S6 in both repetitions, the invariant the measure must
+satisfy. `mean_delta` is the mean absolute difference between the two
+repetitions across scenarios: the stability of the model as a scorer.
+At temperature 0 it is often small but not necessarily zero, because
+batched inference on the serving backend makes even greedy sampling
+vary between runs; non-zero values quantify that residual jitter. `total_cost` is summed over all calls of the benchmark.
+
+## Reading the benchmark
+
+```{r findings}
+n_ladder_ok <- sum(ladder$ladder_ok)
+default_model <- "glm-5.3"
+default_liminality <- liminality |>
+  filter(model == default_model) |>
+  group_by(scenario) |>
+  summarise(liminality = mean(liminality), .groups = "drop") |>
+  arrange(factor(scenario, levels = scenarios)) |>
+  pull(liminality)
+```
+
+`r n_ladder_ok` of `r length(models)` models reproduce the strictly
+increasing ladder. The default model, `r default_model`, yields the
+liminalities
+`r paste(sprintf("%.2f", default_liminality), collapse = ", ")` along
+S1--S6. When a model deviates, the dimension-level scores remain in the
+cached parquet, and the *From a naive LLM judge to a rigorous one*
+vignette examines which dimensions drive the difference: disagreement
+concentrated in one dimension is evidence about that dimension's
+anchors, while diffuse disagreement is evidence about the model.
+Stability deltas above zero
+mean the model does not score deterministically even at temperature 0,
+and its scores should not be compared at a finer resolution than the
+observed jitter. Per the specification, such findings feed the anchor
+review; they are never used to re-tune the prompts on these scenarios.
+
+Regenerate the cached results with:
+
+```sh
+R CMD INSTALL -l "$(rv library)" .
+rv run data-raw/model_comparison.R
+```

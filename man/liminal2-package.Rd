@@ -6,23 +6,8 @@
 \alias{liminal2-package}
 \title{liminal2: Estimating the Size of the Liminal Space}
 \description{
-\code{liminal2} estimates adjudication strength and liminality for predictive
-modelling goals. The package provides base-R estimators for six
-components, bootstrap uncertainty, weight sensitivity, leakage audits and
-five benchmark scenarios.
+Estimates the size of the liminal space between a business ask and a data based solution as a data scientist of data engineer would propose. A liminal space is a measure of the uncertainty and ambiguity that lies between the two states of ask and solution. It is relevant because LLMs work better when liminality is small, and are more likely to create spurious outputs when liminality is large. Assessing the liminal space give us a measure that helps ensure how much guidance by a human expert the development of a solution needs.
 }
-\section{Design decisions}{
-
-\itemize{
-\item Components \code{a5} and \code{a6} are supplied as anchored rubric score vectors;
-the package does not ship an interactive elicitation interface.
-\item Scenario S5 estimates \code{a4} with a documented observed-outcome proxy
-because its target is counterfactual.
-\item The estimators use base R; suggested packages are only used for tests,
-cross-checks and development.
-}
-}
-
 \author{
 \strong{Maintainer}: Frans van Dunné \email{frans@ixpantia.com} (\href{https://orcid.org/0000-0002-7853-2811}{ORCID})
 

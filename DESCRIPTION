@@ -1,43 +1,46 @@
 Package: liminal2
-Title: Estimate Adjudication Strength and Liminality for Data Science Goals
-Version: 0.1.0
+Title: Estimate the Size of the Liminal Space Between Business Ask and Data Solution
+Version: 0.3.0
 Authors@R:
   c(person(given = "ixpantia, SRL",
-         role = "cph",
-         email = "hola@ixpantia.com"),
+          role = "cph",
+          email = "hola@ixpantia.com"),
   person(given = "Frans",
-         family = "van Dunné",
-         role = c("cre", "aut"),
-         email = "frans@ixpantia.com",
-         comment = c(ORCID = "0000-0002-7853-2811"))
- )
-Description: Estimates adjudication strength and liminality for predictive
-    modelling goals from six components: label determinacy, construct
-    stability, predictive multiplicity, attainable discriminability, oracle
-    strength and normative consensus. Includes bootstrap uncertainty,
-    weight sensitivity, leakage auditing and five benchmark scenarios of
-    increasing liminality.
+          family = "van Dunné",
+          role = c("cre", "aut"),
+          email = "frans@ixpantia.com",
+          comment = c(ORCID = "0000-0002-7853-2811"))
+  )
+Description: Estimates the size of the liminal space between a business ask and a data based solution as a data scientist of data engineer would propose. A liminal space is a measure of the uncertainty and ambiguity that lies between the two states of ask and solution. It is relevant because LLMs work better when liminality is small, and are more likely to create spurious outputs when liminality is large. Assessing the liminal space give us a measure that helps ensure how much guidance by a human expert the development of a solution needs.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
+VignetteBuilder:
+    knitr
 Depends:
     R (>= 4.1.0)
 Imports:
-    graphics,
-    methods,
+    cli,
+    ellmer,
+    httr2,
+    jsonlite,
+    purrr,
+    rlang,
     stats,
-    utils
+    tibble
 Suggests:
+    arrow,
     DescTools,
+    dplyr,
     ggplot2,
     glmnet,
     irr,
     knitr,
     rmarkdown,
     testthat (>= 3.0.0),
+    tidyr,
     withr,
     yaml
-VignetteBuilder: knitr
 Config/testthat/edition: 3
 Config/Needs/website: pkgdown
 Config/roxygen2/version: 8.1.1
