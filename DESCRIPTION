@@ -1,5 +1,5 @@
 Package: liminal2
-Title: Estimate the size of the liminal space between business ask and data solution
+Title: Estimate the Size of the Liminal Space Between Business Ask and Data Solution
 Version: 0.2.0
 Authors@R:
   c(person(given = "ixpantia, SRL",
@@ -22,15 +22,12 @@ Depends:
 Imports:
     cli,
     ellmer,
-    graphics,
     httr2,
     jsonlite,
-    methods,
     purrr,
     rlang,
     stats,
-    tibble,
-    utils
+    tibble
 Suggests:
     arrow,
     DescTools,

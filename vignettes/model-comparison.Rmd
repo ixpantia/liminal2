@@ -57,7 +57,7 @@ cell run twice to quantify run-to-run stability at temperature 0. The
 raw scores, token usage and cost of every call are cached in
 `inst/extdata/model-comparison-results.parquet`.
 
-## Linality per model and scenario
+## Liminality per model and scenario
 
 Each row of the headline table aggregates the two repetitions. The
 condition scores are computed from the raw scores with the fixed
@@ -79,8 +79,8 @@ liminality <- results |>
 headline <- liminality |>
   group_by(model, scenario) |>
   summarise(
-    mean_linality = mean(linality),
-    rep_delta = abs(diff(linality)),
+    mean_liminality = mean(liminality),
+    rep_delta = abs(diff(liminality)),
     .groups = "drop"
   ) |>
   mutate(scenario = factor(scenario, levels = scenarios)) |>
@@ -90,7 +90,7 @@ ladder <- liminality |>
   mutate(scenario = factor(scenario, levels = scenarios)) |>
   arrange(model, rep, scenario) |>
   group_by(model, rep) |>
-  summarise(ladder_ok = all(diff(linality) > 0), .groups = "drop") |>
+  summarise(ladder_ok = all(diff(liminality) > 0), .groups = "drop") |>
   group_by(model) |>
   summarise(ladder_ok = all(ladder_ok), .groups = "drop")
 
@@ -103,8 +103,8 @@ cost <- results |>
   summarise(total_cost = sum(cost, na.rm = TRUE), .groups = "drop")
 
 table1 <- headline |>
-  mutate(mean_linality = round(mean_linality, 2)) |>
-  pivot_wider(names_from = scenario, values_from = mean_linality) |>
+  mutate(mean_liminality = round(mean_liminality, 2)) |>
+  pivot_wider(names_from = scenario, values_from = mean_liminality) |>
   left_join(stability, by = "model") |>
   left_join(ladder, by = "model") |>
   left_join(cost, by = "model") |>
@@ -153,18 +153,18 @@ knitr::kable(table2)
 ```{r findings}
 n_ladder_ok <- sum(ladder$ladder_ok)
 default_model <- "glm-5.3"
-default_linality <- liminality |>
+default_liminality <- liminality |>
   filter(model == default_model) |>
   group_by(scenario) |>
-  summarise(linality = mean(linality), .groups = "drop") |>
+  summarise(liminality = mean(liminality), .groups = "drop") |>
   arrange(factor(scenario, levels = scenarios)) |>
-  pull(linality)
+  pull(liminality)
 ```
 
 `r n_ladder_ok` of `r length(models)` models reproduce the strictly
 increasing ladder. The default model, `r default_model`, yields the
 liminalities
-`r paste(sprintf("%.2f", default_linality), collapse = " < ")` along
+`r paste(sprintf("%.2f", default_liminality), collapse = " < ")` along
 S1--S6. When a model deviates, the raw-score table above shows which
 dimensions drive the difference: disagreement concentrated in one
 dimension is evidence about that dimension's anchors, while diffuse
