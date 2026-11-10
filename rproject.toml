@@ -1,6 +1,6 @@
 [project]
 name = "liminal2"
-r_version = "4.6"
+r_version = "4.5.2"
 
 # A list of repositories to fetch packages from. Order matters: we will try to get a package from each repository in order.
 # The alias is only used in this file if you want to specifically require a dependency to come from a certain repository.
@@ -15,16 +15,23 @@ repositories = [
 # {name = "dplyr", repository = "CRAN"},
 # {name = "dplyr", git = "https://github.com/tidyverse/dplyr.git", tag = "v1.1.4"},
 dependencies = [
+  "arrow",
   "bibtex",
+  "cli",
   "DescTools",
+  "ellmer",
   "ggplot2",
   "glmnet",
+  "httr2",
   "irr",
   "knitr",
   "pkgdown",
+  "purrr",
+  "rlang",
   "rmarkdown",
   "roxygen2",
   "testthat",
+  "tibble",
   "withr",
   "yaml",
   # ragg 1.4.0 avoids libwebp-devel when compiling on openSUSE.
