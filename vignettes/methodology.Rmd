@@ -601,11 +601,13 @@ Relative to `1.1.0`, `1.2.0` moved
 `r paste(improved_120, collapse = ", ")` closer to the fixture, and moved
 `r paste(regressed_120, collapse = ", ")` away from it. The point is not
 that every dimension improved; it is that the rules now read the existing
-anchors instead of overriding them. The one substantive cost is
-`action_identifiable`: S5 and S6 both score below the fixture's 8, and S6
-lands below the prompt's own 6--7 band for a named action that lacks a
-threshold and an owner. That is a remaining calibration gap, not a reason
-to revise again in this iteration.
+anchors instead of overriding them. The largest cost is
+`action_identifiable`: S5 and S6 both score below the fixture's 8, and
+both sit at the lower edge of the prompt's 6--7 band for a named action
+that lacks a threshold and an owner. `shared_meaning` also moved further
+from the fixture, but by less than the raw-score jitter. Those are
+remaining calibration gaps, not a reason to revise again in this
+iteration.
 
 At the model-averaged level, S1 moved from `r sprintf("%.3f", s1_110)` to
 `r sprintf("%.3f", s1_120)`, and S5 from `r sprintf("%.3f", s5_110)` to

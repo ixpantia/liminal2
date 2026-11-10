@@ -13,6 +13,9 @@ Authors@R:
   )
 Description: Estimates the size of the liminal space between a business ask and a data based solution as a data scientist of data engineer would propose. A liminal space is a measure of the uncertainty and ambiguity that lies between the two states of ask and solution. It is relevant because LLMs work better when liminality is small, and are more likely to create spurious outputs when liminality is large. Assessing the liminal space give us a measure that helps ensure how much guidance by a human expert the development of a solution needs.
 License: MIT + file LICENSE
+URL: https://ixpantia.github.io/liminal2/,
+    https://github.com/ixpantia/liminal2
+BugReports: https://github.com/ixpantia/liminal2/issues
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 VignetteBuilder:
