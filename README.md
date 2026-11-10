@@ -133,7 +133,7 @@ nr | Plain-language name | Formal name | Question a business owner can answer | 
 
 ### Test scenarios
 
-To test the package we defined 7 test scenarios. During their definition we used the 5 characteristics that we intuitively assigned to the ambiguity of liminal spaces when we started out. The details are avaible in the tests/scenarios folder, with the statemen of ask and context and the expected outcomes
+To test the package we defined 6 test scenarios. During their definition we used the 5 characteristics that we intuitively assigned to the ambiguity of liminal spaces when we started out. The details are avaible in the tests/scenarios folder, with the statemen of ask and context and the expected outcomes
 
 In summary these are the following, and they include a scenario where the size of the liminal space goes towards infinity - a business asks that seems to make sense, but that cannot be answered with the data and methodology available.
 
