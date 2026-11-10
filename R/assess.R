@@ -129,20 +129,24 @@ chat_base_url <- function(chat) {
 #' @export
 #' @noRd
 print.liminal_assessment <- function(x, ...) {
-  cli::cli_rule("Liminal space assessment")
-  cli::cli_text(
-    "Size of the liminal space (0 = closed, 1 = open): {
-      sprintf('%.2f', x$liminality)
-    }"
+  # cat() writes to stdout, where print-method output belongs; cli's
+  # text helpers default to stderr, which callers cannot capture.
+  cat(
+    "Liminal space assessment\n",
+    "Size of the liminal space (0 = closed, 1 = open): ",
+    sprintf("%.2f", x$liminality),
+    "\n\n",
+    "Raw dimension scores (0 = small space, 10 = large):\n",
+    sep = ""
   )
-  cli::cli_text("")
-  cli::cli_text("Raw dimension scores (0 = small space, 10 = large):")
   for (dimension in names(x$raw_scores)) {
-    cli::cli_text("  {dimension}: {x$raw_scores[[dimension]]}")
+    cat("  ", dimension, ": ", x$raw_scores[[dimension]], "\n", sep = "")
   }
-  cli::cli_text("")
   model <- if (is.na(x$model)) "unknown" else x$model
-  cli::cli_text("Model: {model}")
-  cli::cli_text("Prompt versions: {x$prompt_versions[[1]]}")
+  cat(
+    "\nModel: ", model, "\n",
+    "Prompt versions: ", x$prompt_versions[[1]], "\n",
+    sep = ""
+  )
   invisible(x)
 }

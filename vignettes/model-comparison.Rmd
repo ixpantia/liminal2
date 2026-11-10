@@ -120,8 +120,9 @@ knitr::kable(table1)
 along S1--S6 in both repetitions, the invariant the measure must
 satisfy. `mean_delta` is the mean absolute difference between the two
 repetitions across scenarios: the stability of the model as a scorer.
-At temperature 0 it is usually zero; non-zero values quantify residual
-nondeterminism. `total_cost` is summed over all calls of the benchmark.
+At temperature 0 it is often small but not necessarily zero, because
+batched inference on the serving backend makes even greedy sampling
+vary between runs; non-zero values quantify that residual jitter. `total_cost` is summed over all calls of the benchmark.
 
 ## Raw dimension scores
 
@@ -170,7 +171,8 @@ dimension is evidence about that dimension's anchors, while diffuse
 disagreement is evidence about the model. Stability deltas above zero
 mean the model does not score deterministically even at temperature 0,
 and its scores should not be compared at a finer resolution than the
-observed jitter.
+observed jitter. Per the specification, such findings feed the anchor
+review; they are never used to re-tune the prompts on these scenarios.
 
 Regenerate the cached results with:
 

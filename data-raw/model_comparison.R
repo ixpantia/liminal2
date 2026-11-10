@@ -55,12 +55,11 @@ message("Benchmarking models: ", paste(model_info$model, collapse = ", "))
 source("tests/testthat/helper_scenarios.R")
 scenarios <- liminal_scenario_fixtures
 
-# The benchmark calls the package's own orchestration pieces directly
-# so that token usage and cost can be collected per call
-# (assess_liminal_space() does not return cost). Internal helpers are
-# used deliberately: this is a development script, not shipped code.
-score_type <- liminal2:::liminal_score_type()
-
+# The benchmark calls the package's own orchestration directly, so
+# that token usage and cost can be collected per call
+# (assess_liminal_space() does not return tokens). Internal helpers
+# are used deliberately: this is a development script, not shipped
+# code.
 rows <- list()
 
 for (model in model_info$model) {
@@ -79,55 +78,12 @@ for (model in model_info$model) {
         rep
       ))
 
-      results <- tryCatch(
-        ellmer::parallel_chat_structured(
-          chat,
-          prompts,
-          type = score_type,
-          include_tokens = TRUE,
-          max_active = 7L,
-          rpm = 500,
-          on_error = "continue"
-        ),
-        error = function(cnd) cnd
-      )
+      detail <- liminal2:::score_dimensions_detail(prompts, chat)
 
-      if (inherits(results, "error")) {
-        stop("The concurrent attempt failed: ", conditionMessage(results))
-      }
-
-      for (i in seq_along(prompts)) {
-        dimension <- names(prompts)[[i]]
-        error <- if (".error" %in% names(results)) {
-          results$.error[[i]]
-        } else {
-          NULL
-        }
-
-        raw_score <- NA_integer_
-        input_tokens <- NA_real_
-        output_tokens <- NA_real_
-
-        if (inherits(error, "error")) {
-          # Failed dimensions are retried sequentially with backoff;
-          # the token usage of the failed attempts is not recoverable.
-          raw_score <- liminal2:::score_with_retry(
-            prompts[[i]],
-            dimension,
-            chat
-          )
-        } else {
-          raw_score <- liminal2:::validate_llm_score(
-            results$score[[i]],
-            dimension
-          )
-          input_tokens <- results$input_tokens[[i]]
-          output_tokens <- results$output_tokens[[i]]
-        }
-
+      for (i in seq_len(nrow(detail))) {
         cost <- (
-          input_tokens / 1e6 * prices$input_cost +
-            output_tokens / 1e6 * prices$output_cost
+          detail$input_tokens[[i]] / 1e6 * prices$input_cost +
+            detail$output_tokens[[i]] / 1e6 * prices$output_cost
         )
 
         rows[[length(rows) + 1L]] <- tibble::tibble(
@@ -135,10 +91,10 @@ for (model in model_info$model) {
           model = model,
           scenario = scenario_name,
           rep = rep,
-          dimension = dimension,
-          raw_score = raw_score,
-          input_tokens = input_tokens,
-          output_tokens = output_tokens,
+          dimension = detail$dimension[[i]],
+          raw_score = detail$raw_score[[i]],
+          input_tokens = detail$input_tokens[[i]],
+          output_tokens = detail$output_tokens[[i]],
           cost = cost
         )
       }

@@ -25,6 +25,7 @@ dependencies = [
   "glmnet",
   "httr2",
   "irr",
+  "jsonlite",
   "knitr",
   "pkgdown",
   "purrr",

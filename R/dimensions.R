@@ -145,8 +145,8 @@ liminal_prompts <- function(ask, situation = NULL) {
     )
   })
 
-  # interpolate_package() returns glue strings; keep the plain
-  # character vector and attach the canonical dimension names.
-  prompts <- as.character(prompts)
+  # interpolate_package() returns glue strings inside a list; keep the
+  # list (the contract is a named list) and attach the canonical
+  # dimension names.
   stats::setNames(prompts, liminal_dimension_names)
 }

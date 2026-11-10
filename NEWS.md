@@ -8,7 +8,10 @@
 * Add `liminal_chat()` for the OpenAI-compatible Panama endpoint
   (model `glm-5.3` by default, temperature 0), configured entirely
   through the `PANAMA_API_KEY`, `PANAMA_BASE_URL` and `LIMINAL2_MODEL`
-  environment variables.
+  environment variables. ellmer builds the client; the scoring
+  transport itself runs on `httr2`, because the gateway labels its
+  JSON responses `text/plain`, which ellmer's strict content-type
+  check rejects.
 * Add `liminal_prompts()` and `liminal_dimensions()`: the seven
   versioned prompt templates ship in `inst/prompts/` with fixed anchor
   rubrics that are independent of the test scenarios, keeping scores
