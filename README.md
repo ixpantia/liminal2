@@ -80,7 +80,7 @@ consequences, the solution in the language of operationalised targets, and
 nothing in either artifact guarantees that the second answers the first. 
 
 Liminality is the measured bilateral distance of
-that gap $L = 1 - A$, where $A$ is the weighted geometric mean of six
+that gap $L = 1 - A$, where $A$ is the weighted geometric mean of seven
 conditions on the ask–solution pair:
 
  1. whether rival operationalisations of the target agree 
@@ -119,7 +119,7 @@ customers it identifies are the ones who should get the offer.
 
 ## The dimensions of liminal space
 
-To make these dimensions easier to work with, we translated the above 7 dimensions to plain language and added some examples that of questions and evidence. These are listed in Table 2
+The seven conditions above can be used as dimensions on wich we measure liminal space. To make these dimensions easier to work with, we translated the above 7 dimensions to plain language and added some examples that of questions and evidence. These are listed in Table 2
 
 nr | Plain-language name | Formal name | Question a business owner can answer | Question a data scientist can answer | Evidence
 -- | -- | -- | -- | -- | --
