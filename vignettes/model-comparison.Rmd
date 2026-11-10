@@ -102,8 +102,13 @@ cost <- results |>
   group_by(model) |>
   summarise(total_cost = sum(cost, na.rm = TRUE), .groups = "drop")
 
+# One row per model: the per-scenario rep_delta is summarised by
+# mean_delta below, so it must not survive into the wide table (it
+# would become a row identifier and shatter the pivot into mostly-NA
+# rows).
 table1 <- headline |>
   mutate(mean_liminality = round(mean_liminality, 2)) |>
+  dplyr::select(-rep_delta) |>
   pivot_wider(names_from = scenario, values_from = mean_liminality) |>
   left_join(stability, by = "model") |>
   left_join(ladder, by = "model") |>

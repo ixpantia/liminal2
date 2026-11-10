@@ -202,13 +202,16 @@ chat_structured_call <- function(chat, prompt) {
 }
 
 # Scores one dimension with at most `max_attempts` attempts and
-# exponential backoff between transport failures. Invalid model output
-# is not retried: it fails fast with liminal_error_llm_score.
+# exponential backoff between transport failures. Five attempts (with
+# waits of 1, 2, 4 and 8 seconds) ride out gateway hiccups and
+# rate-limit bursts, so a dimension only stays unscored when the
+# endpoint is truly unavailable. Invalid model output is not retried:
+# it fails fast with liminal_error_llm_score.
 score_call_with_retry <- function(
   prompt,
   dimension,
   chat,
-  max_attempts = 3L
+  max_attempts = 5L
 ) {
   # Tests shorten the backoff through this option so the retry logic
   # can be exercised without sleeping for seconds.
