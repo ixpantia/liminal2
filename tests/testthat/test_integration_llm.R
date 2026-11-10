@@ -32,7 +32,7 @@ testthat::test_that("live assessments are structurally valid", {
     testthat::expect_true(all(assessment$raw_scores == trunc(
       assessment$raw_scores
     )))
-    testthat::expect_true(all(assessment$prompt_versions == "1.0.0"))
+    testthat::expect_true(all(assessment$prompt_versions == "1.1.0"))
   }
 })
 

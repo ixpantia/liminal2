@@ -55,6 +55,19 @@ message("Benchmarking models: ", paste(model_info$model, collapse = ", "))
 source("tests/testthat/helper_scenarios.R")
 scenarios <- liminal_scenario_fixtures
 
+# Prompt versions are recorded per row, so a run made under one
+# version can never be silently pooled with another.
+dimensions <- liminal2::liminal_dimensions()
+prompt_versions <- stats::setNames(
+  dimensions$prompt_version,
+  dimensions$name
+)
+
+out_path <- Sys.getenv(
+  "LIMINAL2_BENCHMARK_OUT",
+  "inst/extdata/model-comparison-results.parquet"
+)
+
 # The benchmark calls the package's own orchestration directly, so
 # that token usage and cost can be collected per call
 # (assess_liminal_space() does not return tokens). Internal helpers
@@ -88,6 +101,9 @@ for (model in model_info$model) {
 
         rows[[length(rows) + 1L]] <- tibble::tibble(
           benchmark_date = format(Sys.Date()),
+          prompt_version = unname(
+            prompt_versions[[detail$dimension[[i]]]]
+          ),
           model = model,
           scenario = scenario_name,
           rep = rep,
@@ -104,13 +120,6 @@ for (model in model_info$model) {
 
 results <- purrr::list_rbind(rows)
 
-arrow::write_parquet(
-  results,
-  "inst/extdata/model-comparison-results.parquet"
-)
+arrow::write_parquet(results, out_path)
 
-message(
-  "Wrote ",
-  nrow(results),
-  " rows to inst/extdata/model-comparison-results.parquet"
-)
+message("Wrote ", nrow(results), " rows to ", out_path)

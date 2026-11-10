@@ -51,11 +51,15 @@ benchmark_date <- unique(results$benchmark_date)
 ```
 
 The benchmark was regenerated from live API calls on `r benchmark_date`
-and covers `r length(models)` models (`r paste(models, collapse = ", ")`
-), the six scenarios S1--S6 and the seven dimension prompts, with each
-cell run twice to quantify run-to-run stability at temperature 0. The
-raw scores, token usage and cost of every call are cached in
-`inst/extdata/model-comparison-results.parquet`.
+under prompt version `r unique(results$prompt_version)`, and covers
+`r length(models)` models (`r paste(models, collapse = ", ")`), the six
+scenarios S1--S6 and the seven dimension prompts, with each cell run
+twice to quantify run-to-run stability at temperature 0. The raw scores,
+token usage and cost of every call are cached in
+`inst/extdata/model-comparison-results.parquet`. The superseded `1.0.0`
+run is kept in
+`inst/extdata/model-comparison-results-v1.0.0.parquet` and compared in
+the *From a naive LLM judge to a rigorous one* vignette.
 
 ## Liminality per model and scenario
 

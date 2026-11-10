@@ -33,6 +33,25 @@ on the operating point.
 Score 8 (large space): The parties disagree on the criterion itself,
 or on who bears the cost of each error.
 
+## What counts
+
+Score the agreement among the parties who bear the cost of each
+error. A missing cost matrix is evidence of an unresolved
+trade-off, not evidence of agreement.
+
+## How to score
+
+1. Is a cost of each error stated? If not, score at least 6.
+2. Is the operating threshold accepted by the parties who bear the
+   cost? If the principle is agreed but the operating point is not,
+   score 5.
+3. If several parties with conflicting loss functions are described
+   and no one can arbitrate, score 8.
+4. Match to the anchors and interpolate.
+5. Reserve 0-1 for a case where every party accepts the threshold
+   and the error costs, and 9-10 for one where the parties disagree
+   on the criterion itself.
+
 ## Input
 
 Business ask:

@@ -1,4 +1,4 @@
-# liminal2
+# liminal2 <img src="man/figures/logo.png" align="right" height="200" alt="liminal2 logo" />
 
 <!-- Describe the new implementation here. -->
 

@@ -32,6 +32,28 @@ differ moderately and monitoring would flag it.
 Score 8 (large space): A structural break in policy, market or product
 makes history unrepresentative of the period to be predicted.
 
+## What counts
+
+Score only the stability of the outcome-generating process over
+time. Selection, censoring, stockouts and missing labels are
+knowability problems, not stability breaks: do not lower this score
+for them.
+
+## How to score
+
+1. Identify the time span over which the process is observed and
+   how comparable that history is.
+2. Identify any stated structural change in policy, market, product
+   or measurement.
+3. If no break is stated, score from the length and comparability of
+   the history: roughly 18-24 months of a comparable process maps to
+   about 2-3.
+4. If a break is stated or implied, match it to score 8 and
+   interpolate.
+5. Reserve 0-1 for a process that is provably stationary with
+   out-of-time evidence, and 9-10 for one that is structurally
+   unrepresentative of the period to be predicted.
+
 ## Input
 
 Business ask:

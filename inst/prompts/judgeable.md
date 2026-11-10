@@ -32,6 +32,30 @@ informal or partly subjective.
 Score 8 (large space): No independent arbiter or agreed procedure
 exists; only the supplier can assert success.
 
+## What counts
+
+Score only whether an independent party with a verification
+procedure exists. Do not score the clarity of the ask, the
+business's definition of success, or whether a baseline has been
+agreed: those belong to other dimensions.
+
+An adjudicator can exist even when the ask is vague. An auditor, a
+regulator, an independent reviewer, or a written model-validation
+procedure counts. If the situation implies one, do not score above
+4 merely because the ask is ambiguous.
+
+## How to score
+
+1. Name the independent party, if any.
+2. Name the procedure, if any, and whether it is written.
+3. Externally defined labels and regulated contexts usually imply
+   an external procedure; the absence of a business baseline does
+   not remove it.
+4. Match to the anchors and interpolate.
+5. Reserve 0-1 for a formally audited output with a written
+   procedure, and 9-10 for a case where only the supplier can assert
+   success.
+
 ## Input
 
 Business ask:

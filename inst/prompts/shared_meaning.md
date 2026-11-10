@@ -32,6 +32,34 @@ choice moves a modest share of cases and is undebated.
 Score 8 (large space): Three or more rival definitions are live and
 the choice flips a material share of cases; no owner can arbitrate.
 
+## What counts
+
+Count only rival definitions of the target label that change who is
+classified positive. Two definitions are rival only when they would
+label a different set of cases positive.
+
+Do not count as shared meaning:
+- the performance horizon or observation window;
+- the decision the output will drive;
+- the required output granularity;
+- the absence of a baseline or of a definition of "normal";
+- which features are available or how they are joined.
+
+## How to score
+
+1. Quote the definition of the target that the input states or
+   implies.
+2. Quote any rival definition. If you cannot quote a second
+   definition that changes who is positive, the score cannot exceed
+   3.
+3. If the input explicitly says the label is settled or externally
+   defined, do not score above 4 on this dimension.
+4. Otherwise match the quoted definitions to the anchors and
+   interpolate between them.
+5. Reserve 0-1 for a case where every downstream use follows one
+   written definition, and 9-10 for a case where rival definitions
+   are irreconcilable and no one can arbitrate.
+
 ## Input
 
 Business ask:

@@ -1,3 +1,22 @@
+# liminal2 0.3.0
+
+* Prompt version `1.1.0`: every dimension template now carries a **scope
+  guard** (the evidence that belongs to the dimension and the evidence it
+  must not absorb from another dimension) and an **ordered scoring
+  procedure** (quote the evidence, match the closest anchor, apply the
+  dimension's partial-credit rules, interpolate, and reserve the extremes
+  for structural cases). The anchor rubrics at 2, 5 and 8 and the
+  direction statement are unchanged. Scores produced under `1.0.0` and
+  `1.1.0` are not poolable; the prompt version is recorded in every
+  result and every benchmark row.
+* Add the methodology vignette, which documents the evolution from a
+  naive single-shot judge to the current design and measures the effect
+  of `1.1.0` against the frozen `1.0.0` benchmark.
+* Benchmark caches now record `prompt_version` per row. The `1.0.0` run
+  is frozen in
+  `inst/extdata/model-comparison-results-v1.0.0.parquet`; the live cache
+  always holds the current version.
+
 # liminal2 0.2.0
 
 * Add `assess_liminal_space()`: scores a business ask (and optional

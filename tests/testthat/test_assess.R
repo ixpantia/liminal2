@@ -51,7 +51,7 @@ testthat::test_that("assess_liminal_space returns a complete assessment", {
     names(assessment$weights),
     liminal_dimension_names
   )
-  testthat::expect_true(all(assessment$prompt_versions == "1.0.0"))
+  testthat::expect_true(all(assessment$prompt_versions == "1.1.0"))
   testthat::expect_identical(
     names(assessment$prompt_versions),
     liminal_dimension_names
